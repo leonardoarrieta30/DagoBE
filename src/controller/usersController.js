@@ -27,28 +27,36 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  await Usuario.create({
-    user: req.body.user,
-    password: req.body.password,
-    state: req.body.state || false,
-    nombre: req.body.nombre,
-    apellido: req.body.apellido,
-    fecha_nacimiento: req.body.fecha_nacimiento,
-    dni: req.body.dni,
-  })
-    .then((user) => {
-      res.status(201).json({
-        user,
-        status: 1,
-        message: "Usuario creado exitosamente",
-      });
+  const existingUser = await Usuario.findOne({
+    where: { user: req.body.user },
+  });
+
+  if (existingUser) {
+    res.status(409).json({ message: "Usuario ya existe", status: 0 });
+  } else {
+    await Usuario.create({
+      user: req.body.user,
+      password: req.body.password,
+      state: req.body.state || false,
+      nombre: req.body.nombre,
+      apellido: req.body.apellido,
+      fecha_nacimiento: req.body.fecha_nacimiento,
+      dni: req.body.dni,
     })
-    .catch((error) => {
-      console.error(error.message);
-      if (error) {
-        res.status(401).json({ message: error.message, status: 0 });
-      }
-    });
+      .then((user) => {
+        res.status(201).json({
+          user,
+          status: 1,
+          message: "Usuario creado exitosamente",
+        });
+      })
+      .catch((error) => {
+        console.error(error.message);
+        if (error) {
+          res.status(401).json({ message: error.message, status: 0 });
+        }
+      });
+  }
 });
 
 router.post("/verificarUsuarioExiste", async (req, res) => {

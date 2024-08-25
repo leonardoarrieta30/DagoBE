@@ -1,8 +1,27 @@
 const express = require("express");
 const Usuario = require("../database/models/User");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+const generateToken = (user) => {
+  return jwt.sign({ id: user.id, user: user.user }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+};
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Acceso denegado" });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Token inválido" });
+    req.user = user;
+    next();
+  });
+};
+
+router.get("/", authenticateToken, async (_req, res) => {
   Usuario.findAll()
     .then((users) => {
       res.json({ users, status: 1, message: "Usuarios encontrados" });
@@ -12,7 +31,7 @@ router.get("/", async (_req, res) => {
     });
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticateToken, async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {
@@ -30,9 +49,13 @@ router.post("/", async (req, res) => {
   const existingUser = await Usuario.findOne({
     where: { user: req.body.user },
   });
-
+  const existingDni = await Usuario.findOne({
+    where: { dni: req.body.dni },
+  });
   if (existingUser) {
-    res.status(409).json({ message: "Usuario ya existe", status: 0 });
+    res.status(409).json({ message: "Usuario ya existe", status: 2 });
+  } else if (existingDni) {
+    res.status(409).json({ message: "DNI ya existe", status: 3 });
   } else {
     await Usuario.create({
       user: req.body.user,
@@ -44,17 +67,17 @@ router.post("/", async (req, res) => {
       dni: req.body.dni,
     })
       .then((user) => {
+        const token = generateToken(user);
         res.status(201).json({
           user,
+          token,
           status: 1,
           message: "Usuario creado exitosamente",
         });
       })
       .catch((error) => {
         console.error(error.message);
-        if (error) {
-          res.status(401).json({ message: error.message, status: 0 });
-        }
+        res.status(401).json({ message: error.message, status: 0 });
       });
   }
 });
@@ -65,17 +88,19 @@ router.post("/verificarUsuarioExiste", async (req, res) => {
   });
 
   if (existingUser) {
-    console.log(existingUser);
-    res
-      .status(200)
-      .json({ user: existingUser, status: 1, message: "Usuario encontrado" });
+    const token = generateToken(existingUser);
+    res.status(200).json({
+      user: existingUser,
+      token,
+      status: 1,
+      message: "Usuario encontrado",
+    });
   } else {
-    console.log(existingUser);
     res.status(404).json({ message: "Credenciales incorrectas", status: 0 });
   }
 });
 
-router.get("/findByUser/:user", async (req, res) => {
+router.get("/findByUser/:user", authenticateToken, async (req, res) => {
   Usuario.findOne({
     where: { user: req.params.user },
   })
@@ -91,9 +116,7 @@ router.get("/findByUser/:user", async (req, res) => {
     });
 });
 
-
-
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateToken, async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {
@@ -106,7 +129,7 @@ router.put("/:id", async (req, res) => {
               nombre: req.body.nombre,
               apellido: req.body.apellido,
               fecha_nacimiento: req.body.fecha_nacimiento,
-              dni: req.body.dni,              
+              dni: req.body.dni,
             },
             {
               where: {
@@ -126,10 +149,11 @@ router.put("/:id", async (req, res) => {
       }
     })
     .catch((error) => {
+      res.json(error.message);
     });
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateToken, async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {

@@ -28,7 +28,7 @@ app.listen(PORT, function () {
   sequelize
     //sync crea la tabla si no existe
     //foce true: drop table
-    .sync({ force: false })
+    .sync({ force: true })
     .then(() => {
       console.log("Connection has been established successfully.");
     })
@@ -41,6 +41,7 @@ app.use("/api/v1/users", require("./controller/usersController"));
 app.use("/api/v1/personas", require("./controller/personasController"));
 app.use("/api/v1/documentos", require("./controller/documentosController"));
 app.use("/api/v1/socials", require("./controller/socialsControllers"));
+app.use("/api/v1/datosCalidad", require("./controller/datosCalidadController"));
 
 //rutas
 // app.get("/", async (req, res) => {

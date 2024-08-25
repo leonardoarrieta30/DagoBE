@@ -80,6 +80,13 @@ Usuario.init(
             throw new Error("El campo dni debe tener 8 caracteres");
           }
         },
+        isNumeric(value) {
+          if (!/^\d{8}$/.test(value)) {
+            throw new Error(
+              "El campo dni debe contener solo 8 dígitos numéricos"
+            );
+          }
+        },
       },
     },
   },

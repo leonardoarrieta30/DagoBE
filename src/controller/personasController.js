@@ -83,7 +83,7 @@ router.post("/", async (req, res) => {
     const {
       locacion,
       puesto_trabajo,
-      descripcion_personal,
+      area,
       foto_perfil,
       usuarioId,
     } = req.body;
@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
       persona = await persona.update({
         locacion,
         puesto_trabajo,
-        descripcion_personal,
+        area,
         foto_perfil,
       });
       res.status(200).json({
@@ -109,7 +109,7 @@ router.post("/", async (req, res) => {
       persona = await Persona.create({
         locacion,
         puesto_trabajo,
-        descripcion_personal,
+        area,
         foto_perfil,
         usuarioId,
       });
@@ -137,7 +137,7 @@ router.put("/:id", async (req, res) => {
             {
               locacion: req.body.locacion,
               puesto_trabajo: req.body.puesto_trabajo,
-              descripcion_personal: req.body.descripcion_personal,
+              area: req.body.area,
               foto_perfil: req.body.foto_perfil,
               usuarioId: req.body.usuarioId,
             },
@@ -175,7 +175,7 @@ router.patch("/:id", async (req, res) => {
             {
               locacion: req.body.locacion,
               puesto_trabajo: req.body.puesto_trabajo,
-              descripcion_personal: req.body.descripcion_personal,
+              area: req.body.area,
               foto_perfil: req.body.foto_perfil,
               usuarioId: req.body.usuarioId,
             },

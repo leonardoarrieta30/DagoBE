@@ -1,7 +1,7 @@
 const { Model, DataTypes } = require("sequelize");
 const sequelize = require("../db");
 
-class Persona extends Model {}
+class Persona extends Model { }
 Persona.init(
   {
     locacion: {
@@ -32,7 +32,7 @@ Persona.init(
       },
     },
 
-    descripcion_personal: {
+    /* descripcion_personal: {
       type: DataTypes.STRING,
       // allowNull: false,
       validate: {
@@ -44,6 +44,10 @@ Persona.init(
         //   msg: "El campo nombre solo puede contener letras y espacios",
         // },
       },
+    }, */
+    area: {
+      type: DataTypes.STRING,
+
     },
 
     foto_perfil: {

@@ -14,7 +14,6 @@ Persona.belongsTo(User);
 //Usuario va a tener muchos documentos
 //añade una clave userId a la tabla documento
 User.hasMany(Documento);
-
 Documento.belongsTo(User);
 
 Persona.hasMany(Social);

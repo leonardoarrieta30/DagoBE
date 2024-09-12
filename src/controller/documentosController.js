@@ -1,5 +1,7 @@
 const express = require("express");
 const Documento = require("../database/models/Documento");
+const Persona = require("../database/models/Persona");
+const Usuario = require("../database/models/User");
 const router = express.Router();
 
 router.get("/", async (_req, res) => {
@@ -21,7 +23,7 @@ router.get("/", async (_req, res) => {
     });
 });
 
-router.get("/usuario/:userId", async (req, res) => {
+router.get("/byUsuarioId/:userId", async (req, res) => {
   const userId = req.params.userId;
   Documento.findAll({
     where: { usuarioId: userId },
@@ -40,26 +42,6 @@ router.get("/usuario/:userId", async (req, res) => {
         .json({ message: "Error al obtener los documentos", status: -1 });
     });
 });
-
-
-
-// router.get("/usuario/:userId", async (req, res) => {
-//   const userId = req.params.userId;
-//   Documento.findAll({
-//     where: { usuarioId: userId },
-//     attributes: { exclude: ["usuarioId"] },
-//     include: "usuario",
-//   })
-//     .then((documentos) => {
-//       res.status(200).json(documentos); // Envía directamente la lista de documentos
-//     })
-//     .catch((error) => {
-//       console.error(error);
-//       res.status(404).json({ message: "Documentos no encontrados", status: 0 });
-//     });
-// });
-
-
 
 
 
@@ -138,5 +120,9 @@ router.delete("/:id", async (req, res) => {
         .json({ message: "Error al eliminar el documento", status: -1 });
     });
 });
+
+
+
+
 
 module.exports = router;

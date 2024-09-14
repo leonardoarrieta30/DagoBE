@@ -28,7 +28,7 @@ app.listen(PORT, function () {
   sequelize
     //sync crea la tabla si no existe
     //foce true: drop table
-    .sync({ force: true })
+    .sync({ force: false })
     .then(() => {
       console.log("Connection has been established successfully.");
     })

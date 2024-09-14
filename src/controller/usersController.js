@@ -21,7 +21,8 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-router.get("/", authenticateToken, async (_req, res) => {
+router.get("/", async (_req, res) => {
+
   Usuario.findAll()
     .then((users) => {
       res.json({ users, status: 1, message: "Usuarios encontrados" });
@@ -31,7 +32,7 @@ router.get("/", authenticateToken, async (_req, res) => {
     });
 });
 
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {
@@ -67,10 +68,10 @@ router.post("/", async (req, res) => {
       dni: req.body.dni,
     })
       .then((user) => {
-        const token = generateToken(user);
+        //const token = generateToken(user);
         res.status(201).json({
           user,
-          token,
+          //token,
           status: 1,
           message: "Usuario creado exitosamente",
         });
@@ -88,10 +89,10 @@ router.post("/verificarUsuarioExiste", async (req, res) => {
   });
 
   if (existingUser) {
-    const token = generateToken(existingUser);
+    //const token = generateToken(existingUser);
     res.status(200).json({
       user: existingUser,
-      token,
+      //token,
       status: 1,
       message: "Usuario encontrado",
     });
@@ -100,7 +101,7 @@ router.post("/verificarUsuarioExiste", async (req, res) => {
   }
 });
 
-router.get("/findByUser/:user", authenticateToken, async (req, res) => {
+router.get("/findByUser/:user", async (req, res) => {
   Usuario.findOne({
     where: { user: req.params.user },
   })
@@ -116,7 +117,7 @@ router.get("/findByUser/:user", authenticateToken, async (req, res) => {
     });
 });
 
-router.put("/:id", authenticateToken, async (req, res) => {
+router.put("/:id", async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {
@@ -153,7 +154,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
     });
 });
 
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   Usuario.findByPk(req.params.id)
     .then((user) => {
       if (user) {

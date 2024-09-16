@@ -2,6 +2,7 @@ const express = require("express");
 const Documento = require("../database/models/Documento");
 const Persona = require("../database/models/Persona");
 const Usuario = require("../database/models/User");
+const { Op } = require('sequelize');
 const router = express.Router();
 
 router.get("/", async (_req, res) => {
@@ -121,6 +122,52 @@ router.delete("/:id", async (req, res) => {
     });
 });
 
+
+router.get('/pdfs-by-area', async (req, res) => {
+  try {
+    const { area, desde, hasta } = req.query;
+
+    if (!area) {
+      return res.status(400).json({ error: 'Area parameter is required' });
+    }
+
+    let whereClause = {};
+
+    if (desde && hasta) {
+      // Asumimos que desde y hasta están en formato 'YYYY-MM-DD'
+      whereClause = {
+        fecha_subida: {
+          [Op.between]: [desde, hasta]
+        }
+      };
+    }
+
+    const pdfs = await Documento.findAll({
+      include: [{
+        model: Usuario,
+        required: true,
+        include: [{
+          model: Persona,
+          where: {
+            area: {
+              [Op.like]: `%${area}%`
+            }
+          }
+        }]
+      }],
+      where: whereClause
+    });
+
+    if (pdfs.length === 0) {
+      return res.status(404).json({ status: 0, mensaje: 'No hay documentos para esa área específica en el rango de fechas dado' });
+    }
+
+    res.status(200).json({ documentos: pdfs, status: 1, message: 'Documentos encontrados' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 

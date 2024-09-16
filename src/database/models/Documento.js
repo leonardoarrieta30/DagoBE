@@ -50,6 +50,17 @@ Documento.init(
         },
       },
     },
+
+    fecha_hasta:{
+      type: DataTypes.STRING,
+      validate: {
+        isDate: {
+          msg: "El campo fecha de vencimiento debe ser una fecha",
+        },
+      },
+    },
+
+
     // estado_documento: {
     //   type: DataTypes.STRING,
     //   // allowNull: false,

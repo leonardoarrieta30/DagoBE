@@ -127,47 +127,50 @@ router.get('/pdfs-by-area', async (req, res) => {
   try {
     const { area, desde, hasta } = req.query;
 
-    if (!area) {
-      return res.status(400).json({ error: 'Area parameter is required' });
-    }
-
     let whereClause = {};
 
+    // Solo aplicar el filtro de fechas si se proporcionan 'desde' y 'hasta'
     if (desde && hasta) {
       // Asumimos que desde y hasta están en formato 'YYYY-MM-DD'
-      whereClause = {
-        fecha_subida: {
-          [Op.between]: [desde, hasta]
-        }
+      whereClause.fecha_subida = {
+        [Op.between]: [desde, hasta]
       };
     }
 
-    const pdfs = await Documento.findAll({
+    // Crear una cláusula de búsqueda condicional para el área
+    const includeClause = [{
+      model: Usuario,
+      required: true,
       include: [{
-        model: Usuario,
-        required: true,
-        include: [{
-          model: Persona,
-          where: {
-            area: {
-              [Op.like]: `%${area}%`
-            }
-          }
-        }]
-      }],
+        model: Persona,
+        where: {}
+      }]
+    }];
+
+    // Solo agregar el filtro del área si se proporciona
+    if (area) {
+      includeClause[0].include[0].where.area = {
+        [Op.like]: `%${area}%`
+      };
+    }
+
+    // Buscar todos los documentos o filtrar según los parámetros
+    const pdfs = await Documento.findAll({
+      include: includeClause,
       where: whereClause
     });
 
     if (pdfs.length === 0) {
-      return res.status(404).json({ status: 0, mensaje: 'No hay documentos para esa área específica en el rango de fechas dado' });
+      return res.status(404).json({ status: 0, mensaje: 'No hay documentos para los criterios dados' });
     }
 
-    res.status(200).json({ documentos: pdfs, status: 1, message: 'Documentos encontrados' });
+    res.status(200).json({ documentos: pdfs, status: 1, mensaje: 'Documentos encontrados' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 
 

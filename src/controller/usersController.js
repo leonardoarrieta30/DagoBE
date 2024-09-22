@@ -1,6 +1,7 @@
 const express = require("express");
 const Usuario = require("../database/models/User");
 const jwt = require("jsonwebtoken");
+const Persona = require("../database/models/Persona");
 const router = express.Router();
 
 const generateToken = (user) => {
@@ -177,5 +178,7 @@ router.delete("/:id", async (req, res) => {
       console.error(error);
     });
 });
+
+
 
 module.exports = router;

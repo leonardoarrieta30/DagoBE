@@ -44,36 +44,13 @@ Documento.init(
 
     fecha_subida: {
       type: DataTypes.STRING,
-      validate: {
-        isDate: {
-          msg: "El campo fecha de subida debe ser una fecha",
-        },
-      },
     },
 
     fecha_hasta:{
       type: DataTypes.STRING,
-      validate: {
-        isDate: {
-          msg: "El campo fecha de vencimiento debe ser una fecha",
-        },
-      },
     },
 
 
-    // estado_documento: {
-    //   type: DataTypes.STRING,
-    //   // allowNull: false,
-    //   validate: {
-    //     // notNull: {
-    //     //   msg: "El campo estado de documento no puede ser nulo",
-    //     // },
-    //     // len: {
-    //     //   args: [3, 255],
-    //     //   msg: "El campo estado de documento debe tener entre 3 y 255 caracteres",
-    //     // },
-    //   },
-    // },
     usuarioId: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -205,4 +205,29 @@ router.patch("/:id", async (req, res) => {
     });
 });
 
+
+router.get('/areaByUsuarioId/:id', async (req, res) => {
+  try {
+    const usuarioId = req.params.id;
+    const persona = await Persona.findOne({
+      where: { usuarioId },
+      //attributes: ['area']
+    });
+
+    if (persona) {
+      if (persona.area) {
+        res.status(200).json({ isExists: true, status: 1, message: "Área encontrada" });
+      } else {
+        res.status(404).json({ isExists: false, message: "Área no encontrada", status: 2 });
+      }
+    } else {
+      res.status(404).json({ message: "Persona no encontrada", status: 2 });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Error al buscar el área", status: 0 });
+  }
+});
+
+
 module.exports = router;

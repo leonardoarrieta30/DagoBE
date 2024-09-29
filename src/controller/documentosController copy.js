@@ -188,7 +188,6 @@ router.get('/pdfs-by-area', async (req, res) => {
 
     // Buscar todos los documentos o filtrar según los parámetros
     const pdfs = await Documento.findAll({
-      attributes: { exclude: ['documento_base64'] }, // Excluir el campo documento_base64
       include: includeClause,
       where: whereClause
     });

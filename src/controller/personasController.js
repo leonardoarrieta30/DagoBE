@@ -229,5 +229,22 @@ router.get('/areaByUsuarioId/:id', async (req, res) => {
   }
 });
 
+router.get('/hasArea/:id', async (req, res) => {
+  try {
+    const usuarioId = req.params.id;
+    const persona = await Persona.findOne({ where: { usuarioId } });
+
+    if (persona) {
+      const hasArea = !!persona.area;
+      res.status(200).json({ hasArea, status: 1, message: "Verificación de área completada" });
+    } else {
+      res.status(404).json({ message: "Persona no encontrada", status: 2 });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Error al verificar el área", status: 0 });
+  }
+});
+
 
 module.exports = router;
